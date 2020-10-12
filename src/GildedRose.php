@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace GildedRose;
 
+use GildedRose\models\Item;
+
 final class GildedRose
 {
     const AGED_BRIE = 'Aged Brie';
@@ -28,7 +30,7 @@ final class GildedRose
     public function updateQuality(): void
     {
         foreach ($this->items as $item) {
-            switch ($item->name) {
+            switch ($item->getName()) {
                 case self::AGED_BRIE:
                     $this->updateAgedBrie($item);
                     break;
@@ -49,55 +51,55 @@ final class GildedRose
 
     private function updateAgedBrie(Item $item): void
     {
-        if ($item->quality < self::MAX_QUALITY) {
-            $item->quality = $item->quality + 1;
+        if ($item->getQuality() < self::MAX_QUALITY) {
+            $item->setQuality($item->getQuality() + 1);
         }
         $this->decreaseSellIn($item);
-        if ($item->sell_in < 0 && $item->quality < self::MAX_QUALITY) {
-            $item->quality = $item->quality + 1;
+        if ($item->getSellIn() < 0 && $item->getQuality() < self::MAX_QUALITY) {
+            $item->setQuality($item->getQuality() + 1);
         }
     }
 
     private function updateBackstagePasses(Item $item): void
     {
-        $newQuality = $item->quality + 1;
-        if ($item->sell_in < self::BACKSTATE_PASSES_INCREASE_TWICE_QUALITY_SELLIN_THRESHOLD) {
+        $newQuality = $item->getQuality() + 1;
+        if ($item->getSellIn() < self::BACKSTATE_PASSES_INCREASE_TWICE_QUALITY_SELLIN_THRESHOLD) {
             $newQuality++;
         }
-        if ($item->sell_in < self::BACKSTATE_PASSES_INCREASE_TRIPLE_QUALITY_SELLIN_THRESHOLD) {
+        if ($item->getSellIn() < self::BACKSTATE_PASSES_INCREASE_TRIPLE_QUALITY_SELLIN_THRESHOLD) {
             $newQuality++;
         }
-        $item->quality = ($newQuality >= self::MAX_QUALITY) ? self::MAX_QUALITY : $newQuality;
+        $item->setQuality(($newQuality >= self::MAX_QUALITY) ? self::MAX_QUALITY : $newQuality);
 
         $this->decreaseSellIn($item);
-        if ($item->sell_in < 0) {
-            $item->quality = self::MIN_QUALITY;
+        if ($item->getSellIn() < 0) {
+            $item->setQuality(self::MIN_QUALITY);
         }
     }
 
     private function updateConjured(Item $item): void
     {
-        $newQuality = $item->quality - 2;
-        $item->quality = ($newQuality < self::MIN_QUALITY) ? self::MIN_QUALITY : $newQuality;
+        $newQuality = $item->getQuality() - 2;
+        $item->setQuality(($newQuality < self::MIN_QUALITY) ? self::MIN_QUALITY : $newQuality);
         $this->decreaseSellIn($item);
-        if ($item->sell_in < 0 && $item->quality > self::MIN_QUALITY) {
-            $item->quality = $item->quality - 2;
+        if ($item->getSellIn() < 0 && $item->getQuality() > self::MIN_QUALITY) {
+            $item->setQuality($item->getQuality() - 2);
         }
     }
 
     private function updateDefaultItem(Item $item): void
     {
-        if ($item->quality > self::MIN_QUALITY) {
-            $item->quality = $item->quality - 1;
+        if ($item->getQuality() > self::MIN_QUALITY) {
+            $item->setQuality($item->getQuality() - 1);
         }
         $this->decreaseSellIn($item);
-        if ($item->sell_in < 0 && $item->quality > self::MIN_QUALITY) {
-            $item->quality = $item->quality - 1;
+        if ($item->getSellIn() < 0 && $item->getQuality() > self::MIN_QUALITY) {
+            $item->setQuality($item->getQuality() - 1);
         }
     }
 
     private function decreaseSellIn(Item $item): void
     {
-        $item->sell_in = $item->sell_in - 1;
+        $item->setSellIn($item->getSellIn() - 1);
     }
 }
