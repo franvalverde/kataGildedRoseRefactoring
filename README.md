@@ -1,6 +1,6 @@
 # GildedRose Kata - PHP Version
 
-See the [instructions file](../instructions.md) for general information about this exercise. This is the PHP version of the
+See the [instructions file](instructions.md) for general information about this exercise. This is the PHP version of the
  GildedRose Kata. 
 
 ## Branchs
