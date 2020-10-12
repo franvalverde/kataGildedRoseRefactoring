@@ -6,6 +6,16 @@ namespace GildedRose;
 
 final class GildedRose
 {
+
+    const AGED_BRIE = 'Aged Brie';
+    const BACKSTAGE_PASSES = 'Backstage passes to a TAFKAL80ETC concert';
+    const CONJURED = 'Conjured';
+    const SULFURAS = 'Sulfuras, Hand of Ragnaros';
+    const MAX_QUALITY = 50;
+    const MIN_QUALITY = 0;
+    const BACKSTATE_PASSES_INCREASE_TWICE_QUALITY_SELLIN_THRESHOLD = 11;
+    const BACKSTATE_PASSES_INCREASE_TRIPLE_QUALITY_SELLIN_THRESHOLD = 6;
+
     /**
      * @var Item[]
      */
@@ -19,53 +29,76 @@ final class GildedRose
     public function updateQuality(): void
     {
         foreach ($this->items as $item) {
-            if ($item->name != 'Aged Brie' and $item->name != 'Backstage passes to a TAFKAL80ETC concert') {
-                if ($item->quality > 0) {
-                    if ($item->name == 'Conjured' && $item->quality > 1) {
-                        $item->quality = $item->quality - 2;
-                    } else if ($item->name != 'Sulfuras, Hand of Ragnaros') {
-                        $item->quality = $item->quality - 1;
-                    }
-                }
-            } else {
-                if ($item->quality < 50) {
-                    $item->quality = $item->quality + 1;
-                    if ($item->name == 'Backstage passes to a TAFKAL80ETC concert') {
-                        if ($item->sell_in < 11) {
-                            if ($item->quality < 50) {
-                                $item->quality = $item->quality + 1;
-                            }
-                        }
-                        if ($item->sell_in < 6) {
-                            if ($item->quality < 50) {
-                                $item->quality = $item->quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if ($item->name != 'Sulfuras, Hand of Ragnaros') {
-                $item->sell_in = $item->sell_in - 1;
-            }
-
-            if ($item->sell_in < 0) {
-                if ($item->name != 'Aged Brie') {
-                    if ($item->name != 'Backstage passes to a TAFKAL80ETC concert') {
-                        if ($item->quality > 0) {
-                            if ($item->name != 'Sulfuras, Hand of Ragnaros') {
-                                $item->quality = $item->quality - 1;
-                            }
-                        }
-                    } else {
-                        $item->quality = $item->quality - $item->quality;
-                    }
-                } else {
-                    if ($item->quality < 50) {
-                        $item->quality = $item->quality + 1;
-                    }
-                }
+            switch ($item->name) {
+                case self::AGED_BRIE:
+                    $this->updateAgedBrie($item);
+                    break;
+                case self::BACKSTAGE_PASSES:
+                    $this->updateBackstagePasses($item);
+                    break;
+                case self::SULFURAS:
+                    break;
+                case self::CONJURED:
+                    $this->updateConjured($item);
+                    break;
+                default:
+                    $this->updateDefaultItem($item);
+                    break;
             }
         }
+    }
+
+    private function updateAgedBrie(Item $item): void
+    {
+        if ($item->quality < self::MAX_QUALITY) {
+            $item->quality = $item->quality + 1;
+        }
+        $this->decreaseSellIn($item);
+        if ($item->sell_in < 0 && $item->quality < self::MAX_QUALITY) {
+            $item->quality = $item->quality + 1;
+        }
+    }
+
+    private function updateBackstagePasses(Item $item): void
+    {
+        $newQuality = $item->quality + 1;
+        if ($item->sell_in < self::BACKSTATE_PASSES_INCREASE_TWICE_QUALITY_SELLIN_THRESHOLD) {
+            $newQuality++;
+        }
+        if ($item->sell_in < self::BACKSTATE_PASSES_INCREASE_TRIPLE_QUALITY_SELLIN_THRESHOLD) {
+            $newQuality++;
+        }
+        $item->quality = ($newQuality >= self::MAX_QUALITY) ? self::MAX_QUALITY : $newQuality;
+
+        $this->decreaseSellIn($item);
+        if ($item->sell_in < 0) {
+            $item->quality = self::MIN_QUALITY;
+        }
+    }
+
+    private function updateConjured(Item $item): void
+    {
+        $newQuality = $item->quality - 2;
+        $item->quality = ($newQuality < self::MIN_QUALITY) ? self::MIN_QUALITY : $newQuality;
+        $this->decreaseSellIn($item);
+        if ($item->sell_in < 0 && $item->quality > self::MIN_QUALITY) {
+            $item->quality = $item->quality - 1;
+        }
+    }
+
+    private function updateDefaultItem(Item $item): void
+    {
+        if ($item->quality > self::MIN_QUALITY) {
+            $item->quality = $item->quality - 1;
+        }
+        $this->decreaseSellIn($item);
+        if ($item->sell_in < 0 && $item->quality > self::MIN_QUALITY) {
+            $item->quality = $item->quality - 1;
+        }
+    }
+
+    private function decreaseSellIn(Item $item): void
+    {
+        $item->sell_in = $item->sell_in - 1;
     }
 }
