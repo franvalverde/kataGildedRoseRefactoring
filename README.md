@@ -4,7 +4,6 @@ See the [instructions file](../instructions.md) for general information about th
  GildedRose Kata. 
 
 ## Branchs
-
 - master: original code of gildedRose Kata
 - stage 0: add tests 
 - stage 1: semantic refactoring
