@@ -6,7 +6,6 @@ namespace GildedRose;
 
 final class GildedRose
 {
-
     const AGED_BRIE = 'Aged Brie';
     const BACKSTAGE_PASSES = 'Backstage passes to a TAFKAL80ETC concert';
     const CONJURED = 'Conjured';
