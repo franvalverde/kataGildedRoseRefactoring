@@ -94,10 +94,14 @@ class GildedRoseTest extends TestCase
 
     public function testItShouldDegradeInQualityTwiceAsNormalOfConjuredItem(): void
     {
-        $items = [new Item('Conjured', 6, 4)];
+        $items = [new Item('Conjured', 2, 20)];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
-        $this->assertSame(2, $items[0]->quality);
+        $this->assertSame(18, $items[0]->quality);
+        while($items[0]->sell_in >= 0) {
+            $gildedRose->updateQuality();
+        }
+        $this->assertSame(12, $items[0]->quality);
     }
 
 }

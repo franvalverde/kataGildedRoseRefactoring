@@ -82,7 +82,7 @@ final class GildedRose
         $item->quality = ($newQuality < self::MIN_QUALITY) ? self::MIN_QUALITY : $newQuality;
         $this->decreaseSellIn($item);
         if ($item->sell_in < 0 && $item->quality > self::MIN_QUALITY) {
-            $item->quality = $item->quality - 1;
+            $item->quality = $item->quality - 2;
         }
     }
 
