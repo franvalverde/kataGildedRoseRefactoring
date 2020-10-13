@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace GildedRose\models;
 
-final class Item
+abstract class Item
 {
     /**
      * @var string
@@ -57,5 +57,11 @@ final class Item
     public function getSellIn(): int
     {
         return $this->sell_in;
+    }
+
+
+    public function decreaseSellIn(): void
+    {
+        $this->setSellIn($this->getSellIn() - 1);
     }
 }

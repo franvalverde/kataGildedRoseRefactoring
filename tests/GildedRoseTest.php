@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace Tests;
 
 use GildedRose\GildedRose;
-use GildedRose\models\Item;
+use GildedRose\models\ItemFactory;
 use PHPUnit\Framework\TestCase;
 
 class GildedRoseTest extends TestCase
 {
     public function testFoo(): void
     {
-        $items = [new Item('foo', 0, 0)];
+        $items = [(new ItemFactory('foo', 0, 0))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame('foo', $items[0]->getName());
@@ -19,7 +19,7 @@ class GildedRoseTest extends TestCase
 
     public function testItShouldDegradeTheQualityTwiceWhenItExpires(): void
     {
-        $items = [new Item('queso cabrales', 0, 10)];
+        $items = [(new ItemFactory('queso cabrales', 0, 10))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(8, $items[0]->getQuality());
@@ -27,7 +27,7 @@ class GildedRoseTest extends TestCase
 
     public function testTheQualityOfAnItemIsNeverNegative(): void
     {
-        $items = [new Item('quesito el caserio', 10, 0)];
+        $items = [(new ItemFactory('quesito el caserio', 10, 0))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(0, $items[0]->getQuality());
@@ -35,7 +35,7 @@ class GildedRoseTest extends TestCase
 
     public function testItShouldIncreasesInQualityTheOlderItGetsAgedBrie(): void
     {
-        $items = [new Item('Aged Brie', 10, 10)];
+        $items = [(new ItemFactory('Aged Brie', 10, 10))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(11, $items[0]->getQuality());
@@ -43,13 +43,13 @@ class GildedRoseTest extends TestCase
 
     public function testTheQualityItsNeverMoreThan50(): void
     {
-        $items = [new Item('Queso Curado', 10, 60)];
+        $items = [(new ItemFactory('Queso Curado', 10, 60))->init()];
         $this->assertSame(50, $items[0]->getQuality());
     }
 
     public function testTheQualityOfSulfurasMustBe80(): void
     {
-        $items = [new Item('Sulfuras, Hand of Ragnaros', 10, 90)];
+        $items = [(new ItemFactory('Sulfuras, Hand of Ragnaros', 10, 90))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(80, $items[0]->getQuality());
@@ -57,7 +57,7 @@ class GildedRoseTest extends TestCase
 
     public function testTheQualityOfSulfurasNeverDecrease(): void
     {
-        $items = [new Item('Sulfuras, Hand of Ragnaros', 10, 20)];
+        $items = [(new ItemFactory('Sulfuras, Hand of Ragnaros', 10, 20))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(20, $items[0]->getQuality());
@@ -65,7 +65,7 @@ class GildedRoseTest extends TestCase
 
     public function testTheQualityOfSulfurasNeverHasToBeSold(): void
     {
-        $items = [new Item('Sulfuras, Hand of Ragnaros', 10, 20)];
+        $items = [(new ItemFactory('Sulfuras, Hand of Ragnaros', 10, 20))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(10, $items[0]->getSellIn());
@@ -73,7 +73,7 @@ class GildedRoseTest extends TestCase
 
     public function testItShouldIncreasesTheQualityOfBackstagePassesAsItsSellInValueApproaches(): void
     {
-        $items = [new Item('Backstage passes to a TAFKAL80ETC concert', 6, 20)];
+        $items = [(new ItemFactory('Backstage passes to a TAFKAL80ETC concert', 6, 20))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(22, $items[0]->getQuality());
@@ -83,7 +83,7 @@ class GildedRoseTest extends TestCase
 
     public function testItShouldDropTheQualityOfBackstagePassesAfterTheConcert(): void
     {
-        $items = [new Item('Backstage passes to a TAFKAL80ETC concert', 6, 20)];
+        $items = [(new ItemFactory('Backstage passes to a TAFKAL80ETC concert', 6, 20))->init()];
         $gildedRose = new GildedRose($items);
         while($items[0]->getSellIn() >= 0) {
             $gildedRose->updateQuality();
@@ -93,7 +93,7 @@ class GildedRoseTest extends TestCase
 
     public function testItShouldDegradeInQualityTwiceAsNormalOfConjuredItem(): void
     {
-        $items = [new Item('Conjured', 2, 20)];
+        $items = [(new ItemFactory('Conjured', 2, 20))->init()];
         $gildedRose = new GildedRose($items);
         $gildedRose->updateQuality();
         $this->assertSame(18, $items[0]->getQuality());
